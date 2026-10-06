@@ -85,6 +85,12 @@ if [ -n "$missing" ] && ask "brew install$missing ?"; then
   # shellcheck disable=SC2086
   brew install $missing
 fi
+GCM_LOCAL="$HOME/.local/share/gcm/git-credential-manager"
+if ! git credential-manager --version >/dev/null 2>&1 && [ -x "$GCM_LOCAL" ]; then
+  # A tarball install of GCM in ~/.local/share/gcm is not on PATH; link it rather than install a second copy.
+  mkdir -p "$HOME/.local/bin" && ln -sf "$GCM_LOCAL" "$HOME/.local/bin/git-credential-manager"
+  echo "linked $GCM_LOCAL into ~/.local/bin"
+fi
 if ! git credential-manager --version >/dev/null 2>&1; then
   echo "missing: git-credential-manager"
   if ask "brew install --cask git-credential-manager ?"; then brew install --cask git-credential-manager; fi
